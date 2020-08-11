@@ -44,4 +44,30 @@ class LoginTests extends TestBase {
                             "and private content #2"));
         });
     }
+
+    @Test
+    @DisplayName("Wrong auth verification in Web app")
+    void wrongLoginVerificationTest() {
+        step("Go to login page", ()-> {
+            open("https://autotests.cloud");
+            $(byTestId("Header label")).shouldHave(text("Not authorized"));
+        });
+
+        step("Fill the authorization form", ()-> {
+            $(byTestId("Authorization form")).shouldBe(visible);
+            $(byTestId("Login input")).setValue(DEFAULT_LOGIN);
+            $(byTestId("Password input")).setValue(DEFAULT_PASSWORD);
+            $(byTestId("Remember me checkbox")).click();
+            $(byTestId("Login button")).click();
+        });
+
+        step("Verify successful authorization", ()-> {
+            $(byTestId("Authorization form")).shouldNot(exist);
+            $(byTestId("Header label")).shouldHave(text("Hello, Wrong user!"));
+            $$(byTestId("Private content"))
+                    .shouldHaveSize(2)
+                    .shouldHave(texts("Here is your private content #1",
+                            "and private content #2"));
+        });
+    }
 }
